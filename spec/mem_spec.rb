@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe List do
   it "gc safe" do
-    list = List.new([1,2,3])
+    a = (0..1000).to_a
+    list = List.new a
     GC.start
-    expect(list.to_a).to eq([1,2,3])
+    expect(list.to_a).to eq(a)
   end
 end
