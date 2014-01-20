@@ -1,5 +1,13 @@
 require 'spec_helper'
 describe List do
+  before :each do
+    GC.start
+  end
+
+  after :each do
+    GC.start
+  end
+
   it "class" do
     expect(List).to be_include(Enumerable)
   end
@@ -225,7 +233,48 @@ describe List do
   end
 
   it "each" do
+    list = List.new
+    expect(list.each).to be_a_kind_of(Enumerator)
+    expect(list.each{}).to eq(list)
 
+    result = []
+    list.each do |i|
+      result << i
+    end
+    expect(result).to eq([])
+
+    list.push 1,2,3
+    list.each do |i|
+      result << i
+    end
+    expect(result).to eq([1,2,3])
+  end
+
+  it "each_index" do
+    list = List.new
+    expect(list.each_index).to be_a_kind_of(Enumerator)
+    expect(list.each_index{}).to eq(list)
+
+    result = []
+    list.each_index do |i|
+      result << i
+    end
+    expect(result).to eq([])
+
+    list.push 1,2,3
+    list.each_index do |i|
+      result << i
+    end
+    expect(result).to eq([0,1,2])
+  end
+
+  it "reverse_each" do
+    list = List[1,2,3]
+    result = []
+    list.reverse_each do |i|
+      result << i
+    end
+    expect(result).to eq([3,2,1])
   end
 
   it "length" do
@@ -247,10 +296,40 @@ describe List do
     expect(list.clear.to_a).to eq([])
   end
 
-#  it "ring" do
-#    list = List[1,2,3]
-#    list.ring.each do |i|
-#      print i
-#    end
-#  end
+  it "ring" do
+    len = 0
+    result = []
+    list = List[1,2,3]
+    ring = list.ring
+    ring.each do |i|
+      break if len == 1000
+      result << i
+      len += 1
+    end
+    expect(result).to eq([1,2,3] * 333 + [1])
+    expect(ring.object_id).to_not eq(list.object_id)
+    expect{ring.push 1}.to raise_error(RuntimeError)
+  end
+
+  it "ring!" do
+    len = 0
+    result = []
+    list = List[1,2,3]
+    ring = list.ring!
+    ring.each do |i|
+      break if len == 1000
+      result << i
+      len += 1
+    end
+    expect(result).to eq([1,2,3] * 333 + [1])
+    expect(ring.object_id).to eq(list.object_id)
+    expect{ring.push 1}.to raise_error(RuntimeError)
+  end
+
+  it "ring?" do
+    list = List[1,2,3]
+    expect(list.ring?).to eq(false)
+    expect(list.ring.ring?).to eq(true)
+    expect(list.ring!.ring?).to eq(true)
+  end
 end

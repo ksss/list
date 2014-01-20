@@ -25,21 +25,39 @@ static VALUE list_push_ary(VALUE, VALUE);
 static VALUE list_unshift(VALUE, VALUE);
 
 static void
-debug(VALUE self)
+check_print(list_t *ptr, const char *msg, long lineno)
 {
-	list_t *ptr;
-	item_t *c;
+	printf("===ERROR(%s)", msg);
+	printf("lineno:%ld===\n", lineno);
+	printf("ptr:%p\n",ptr);
+	printf("ptr->len:%ld\n",ptr->len);
+	printf("ptr->first:%p\n",ptr->first);
+	printf("ptr->last:%p\n",ptr->last);
+	rb_p(ptr->first->value);
+}
 
-	Data_Get_Struct(self, list_t, ptr);
-	printf("debug========\n");
-	printf("first:%p\n", ptr->first);
-	printf("last:%p\n", ptr->last);
-	printf("len:%ld\n", ptr->len);
-	for (c = ptr->first; c; c = c->next) {
-		printf("  last:%p\n", c);
-		rb_p(c->value);
-		printf("  next:%p\n", c->next);
+static void
+check(list_t *ptr, const char *msg)
+{
+	item_t *end;
+	item_t *c;
+	long len, i;
+
+	if (ptr->len == 0 && ptr->first != NULL) check_print(ptr, msg, __LINE__);
+	if (ptr->len != 0 && ptr->first == NULL) check_print(ptr, msg, __LINE__);
+	if (ptr->len == 0 && ptr->last != NULL)  check_print(ptr, msg, __LINE__);
+	if (ptr->len != 0 && ptr->last == NULL)  check_print(ptr, msg, __LINE__);
+	if (ptr->first == NULL && ptr->last != NULL) check_print(ptr, msg, __LINE__);
+	if (ptr->first != NULL && ptr->last == NULL) check_print(ptr, msg, __LINE__);
+
+	len = ptr->len;
+	i = 0;
+	end = ptr->last->next;
+	i++;
+	for (c = ptr->first->next; c != end; c = c->next) {
+		i++;
 	}
+	if (len != i) check_print(ptr, msg, __LINE__);
 }
 
 static VALUE
@@ -61,11 +79,25 @@ list_modify_check(VALUE self)
 	rb_check_frozen(self);
 }
 
+static VALUE
+list_enum_length(VALUE self, VALUE args, VALUE eobj)
+{
+	list_t *ptr;
+	Data_Get_Struct(self, list_t, ptr);
+	return LONG2NUM(ptr->len);
+}
+
 static void
 list_mark(list_t *ptr)
 {
 	item_t *c;
-	for (c = ptr->first; c; c = c->next) {
+	item_t *end;
+
+	if (ptr->first == NULL) return;
+check(ptr, "mark");
+	end = ptr->last->next;
+	rb_gc_mark(ptr->first->value);
+	for (c = ptr->first->next; c != end; c = c->next) {
 		rb_gc_mark(c->value);
 	}
 }
@@ -74,8 +106,16 @@ static void
 list_free(list_t *ptr)
 {
 	item_t *c;
+	item_t *first_next;
 	item_t *next;
-	for (c = ptr->first; c;) {
+	item_t *end;
+
+	if (ptr->first == NULL) return;
+check(ptr, "free");
+	first_next = ptr->first->next;
+	end = ptr->last->next;
+	xfree(ptr->first);
+	for (c = first_next; c != end;) {
 		next = c->next;
 		xfree(c);
 		c = next;
@@ -261,10 +301,30 @@ list_each(VALUE self)
 	item_t *c;
 	list_t *ptr;
 
+	RETURN_SIZED_ENUMERATOR(self, 0, 0, list_enum_length);
 	Data_Get_Struct(self, list_t, ptr);
 	if (ptr->first == NULL) return self;
+
 	for (c = ptr->first; c; c = c->next) {
 		rb_yield(c->value);
+	}
+	return self;
+}
+
+static VALUE
+list_each_index(VALUE self)
+{
+	item_t *c;
+	list_t *ptr;
+	long index;
+
+	RETURN_SIZED_ENUMERATOR(self, 0, 0, list_enum_length);
+	Data_Get_Struct(self, list_t, ptr);
+	if (ptr->first == NULL) return self;
+
+	index = 0;
+	for (c = ptr->first; c; c = c->next) {
+		rb_yield(LONG2NUM(index++));
 	}
 	return self;
 }
@@ -287,6 +347,7 @@ list_replace(VALUE copy, VALUE orig)
 {
 	list_t *ptr_copy;
 	list_t *ptr_orig;
+	item_t *c;
 
 	list_modify_check(copy);
 	if (copy == orig) return copy;
@@ -301,10 +362,8 @@ list_replace(VALUE copy, VALUE orig)
 	}
 
 	list_clear(copy);
-	ptr_orig->last = ptr_orig->first;
-	while (ptr_orig->last != NULL) {
-		list_push(copy, ptr_orig->last->value);
-		ptr_orig->last = ptr_orig->last->next;
+	for (c = ptr_orig->first; c; c = c->next) {
+		list_push(copy, c->value);
 	}
 	return copy;
 }
@@ -876,7 +935,13 @@ list_unshift(VALUE self, VALUE obj)
 	Data_Get_Struct(self, list_t, ptr);
 
 	first = item_alloc(obj, ptr->first);
-	ptr->first = first;
+	if (ptr->first == NULL) {
+		ptr->first = first;
+		ptr->last = first;
+		ptr->last->next = NULL;
+	} else {
+		ptr->first = first;
+	}
 	ptr->len++;
 	return self;
 }
@@ -924,15 +989,36 @@ list_length(VALUE self)
 }
 
 static VALUE
-list_ring(VALUE self)
+list_ring_bang(VALUE self)
 {
-	VALUE clone;
 	list_t *ptr;
-
-	clone = rb_obj_clone(self);
-	Data_Get_Struct(clone, list_t, ptr);
+	Data_Get_Struct(self, list_t, ptr);
+	if (ptr->first == NULL)
+		rb_raise(rb_eRuntimeError, "length is zero list cannot to change ring");
+	rb_obj_freeze(self);
 	ptr->last->next = ptr->first;
 	return self;
+}
+
+static VALUE
+list_ring(VALUE self)
+{
+	VALUE clone = rb_obj_clone(self);
+	list_ring_bang(clone);
+	return clone;
+}
+
+static VALUE
+list_ring_p(VALUE self)
+{
+	list_t *ptr;
+
+	Data_Get_Struct(self, list_t, ptr);
+	if (ptr->first == NULL)
+		return Qfalse;
+	if (ptr->first == ptr->last->next)
+		return Qtrue;
+	return Qfalse;
 }
 
 void
@@ -972,6 +1058,7 @@ Init_list(void)
 	rb_define_method(cList, "unshift", list_unshift_m, -1);
 	rb_define_method(cList, "insert", list_insert, -1);
 	rb_define_method(cList, "each", list_each, 0);
+	rb_define_method(cList, "each_index", list_each_index, 0);
 
 	rb_define_method(cList, "length", list_length, 0);
 
@@ -979,5 +1066,7 @@ Init_list(void)
 
 	rb_define_method(cList, "clear", list_clear, 0);
 
-	// rb_define_method(cList, "ring", list_ring, 0);
+	rb_define_method(cList, "ring", list_ring, 0);
+	rb_define_method(cList, "ring!", list_ring_bang, 0);
+	rb_define_method(cList, "ring?", list_ring_p, 0);
 }
