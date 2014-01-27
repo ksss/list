@@ -23,10 +23,15 @@ describe List do
     expect(List.try_convert "[1,2,3]").to eq(nil)
   end
 
+  it "to_list" do
+    expect([].to_list).to eq(List.new)
+    expect([1,[2],3].to_list).to eq(List[1,[2],3])
+  end
+
   it "initialize" do
     expect(List.new).to be_a_kind_of(List)
     expect(List.new([])).to be_a_kind_of(List)
-    expect(List.new([1])).to be_a_kind_of(List)
+    expect(List.new([1,2,3])).to be_a_kind_of(List)
   end
 
   it "dup and replace" do
@@ -62,6 +67,7 @@ describe List do
   it "==" do
     list = List.new
     expect(list).to eq(List.new)
+    expect(list).to eq(list)
     list.push(1)
     expect(list).to_not eq(List.new)
     expect(list.to_a).to eq([1])
@@ -230,6 +236,7 @@ describe List do
   it "insert" do
     list = List['a','b','c','d']
     expect(list.insert(2, 99)).to eq(List["a","b",99,"c","d"]);
+    expect{list.insert("a", 1)}.to raise_error(TypeError)
   end
 
   it "each" do
@@ -282,6 +289,23 @@ describe List do
     expect(list.length).to eq(0)
     list.push 1,2,3
     expect(list.length).to eq(3)
+    expect(list.size).to eq(3)
+  end
+
+  it "empty?" do
+    list = List.new
+    expect(list.empty?).to eq(true)
+    list.push 1,2,3
+    expect(list.empty?).to eq(false)
+  end
+
+  it "find_index" do
+    list = List.new
+    expect(list.find_index(1)).to eq(nil)
+    list.push 1,2,3
+    expect(list.find_index(1)).to eq(0)
+    expect(list.find_index(2)).to eq(1)
+    expect(list.index(3)).to eq(2)
   end
 
   it "replace" do
@@ -294,6 +318,297 @@ describe List do
   it "clear" do
     list = List[1,2,3]
     expect(list.clear.to_a).to eq([])
+    expect(list.clear.to_a).to eq([])
+  end
+
+  it "rindex" do
+    list = List[1,2,2,2,3]
+    expect(list.rindex(2)).to eq(3)
+    expect(list.rindex(-10)).to eq(nil)
+    expect(list.rindex { |x| x == 2 }).to eq(3)
+  end
+
+  it "join" do
+    expect(List.new.join).to eq("")
+    expect(List[1,2,3].join).to eq("123")
+    expect(List["a","b","c"].join).to eq("abc")
+    expect(List["a","b","c"].join("-")).to eq("a-b-c")
+    expect(List["a",List["b",List["c"]]].join("-")).to eq("a-b-c")
+    expect{List["a","b","c"].join(1)}.to raise_error(TypeError)
+    orig_sep = $,
+    $, = "*"
+    expect(List["a","b","c"].join).to eq("a*b*c")
+    $, = orig_sep
+  end
+
+  it "reverse" do
+    list = List.new
+    expect(list.reverse).to eq(List.new)
+    list.push 1,2,3
+    expect(list.reverse).to eq(List[3,2,1])
+    expect(list).to eq(List[1,2,3])
+  end
+
+  it "reverse!" do
+    list = List.new
+    expect(list.reverse!).to eq(List.new)
+    list.push 1,2,3
+    expect(list.reverse!).to eq(List[3,2,1])
+    expect(list).to eq(List[3,2,1])
+  end
+
+  it "rotate" do
+    list = List.new
+    expect(list.rotate).to eq(List.new)
+    list.push 1,2,3
+    expect(list.rotate).to eq(List[2,3,1])
+    expect(list.rotate(2)).to eq(List[3,1,2])
+    expect(list.rotate(-2)).to eq(List[2,3,1])
+    expect(list).to eq(List[1,2,3])
+    expect{list.rotate("a")}.to raise_error(TypeError)
+    expect{list.rotate(1,2)}.to raise_error(ArgumentError)
+  end
+
+  it "rotate!" do
+    list = List.new
+    expect(list.rotate!).to eq(List.new)
+    list.push 1,2,3
+    expect(list.rotate!).to eq(List[2,3,1])
+    expect(list.rotate!(2)).to eq(List[1,2,3])
+    expect(list.rotate!(-2)).to eq(List[2,3,1])
+    expect(list).to eq(List[2,3,1])
+    expect{list.rotate!("a")}.to raise_error(TypeError)
+    expect{list.rotate!(1,2)}.to raise_error(ArgumentError)
+  end
+
+  it "sort" do
+    list = List.new
+    expect(list.sort).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.sort).to eq(List[1,2,3,4,5])
+    expect(list.sort{|a,b| b - a}).to eq(List[5,4,3,2,1])
+    expect(list).to eq(List[4,1,3,5,2])
+  end
+
+  it "sort!" do
+    list = List.new
+    expect(list.sort!).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.sort!).to eq(List[1,2,3,4,5])
+    expect(list).to eq(List[1,2,3,4,5])
+    expect(list.sort!{|a,b| b - a}).to eq(List[5,4,3,2,1])
+    expect(list).to eq(List[5,4,3,2,1])
+  end
+
+  it "sort_by" do
+    list = List.new
+    expect(list.sort_by{|a| a}).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.sort_by{|a| a}).to eq(List[1,2,3,4,5])
+    expect(list.sort_by{|a| -a}).to eq(List[5,4,3,2,1])
+    expect(list).to eq(List[4,1,3,5,2])
+  end
+
+  it "sort_by!" do
+    list = List.new
+    expect(list.sort_by!{|a| a}).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.sort_by!{|a| a}).to eq(List[1,2,3,4,5])
+    expect(list.sort_by!{|a| -a}).to eq(List[5,4,3,2,1])
+    expect(list).to eq(List[5,4,3,2,1])
+  end
+
+  it "collect" do
+    list = List.new
+    expect(list.collect{|a| a}).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.collect{|a| a * a}).to eq(List[16,1,9,25,4])
+    expect(list.map.each{|a| -a}).to eq(List[-4,-1,-3,-5,-2])
+    expect(list).to eq(List[4,1,3,5,2])
+  end
+
+  it "collect!" do
+    list = List.new
+    expect(list.collect!{|a| a}).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.collect!{|a| a * a}).to eq(List[16,1,9,25,4])
+    expect(list.map!.each{|a| -a}).to eq(List[-16,-1,-9,-25,-4])
+  end
+
+  it "select" do
+    list = List.new
+    expect(list.select{|i| i}).to eq(List.new)
+    list.push *[4,1,3,5,2]
+    expect(list.select{|i| i.even?}).to eq(List[4,2])
+    expect(list.select.each{|i| i.odd?}).to eq(List[1,3,5])
+    expect(list).to eq(List[4,1,3,5,2])
+  end
+
+  it "select!" do
+    list = List.new
+    expect(list.select!{|i| i}).to eq(nil)
+    list.push *[4,1,3,5,2]
+    expect(list.select!{|i| i.even?}).to eq(List[4,2])
+    expect(list.select!.each{|i| i % 4 == 0}).to eq(List[4])
+    expect(list.select!.each{|i| i % 4 == 0}).to eq(nil)
+    expect(list).to eq(List[4])
+  end
+
+  it "keep_if" do
+    list = List.new
+    expect(list.keep_if{|i| i}).to eq(list)
+    list.push *[4,1,3,5,2]
+    expect(list.keep_if{|i| i.even?}).to eq(List[4,2])
+    expect(list.keep_if.each{|i| i % 4 == 0}).to eq(List[4])
+    expect(list.keep_if.each{|i| i % 4 == 0}).to eq(list)
+    expect(list).to eq(List[4])
+  end
+
+  it "values_at" do
+    expect(List.new.values_at(1)).to eq(List[nil])
+    list = List[4,1,3,5,2]
+    expect(list.values_at).to eq(List.new)
+    expect(list.values_at 1).to eq(List[1])
+    expect(list.values_at 1,3,10).to eq(List[1,5,nil])
+    expect(list.values_at -1,-2).to eq(List[2,5])
+    expect(list.values_at 1..5).to eq(List[1,3,5,2,nil])
+    expect(list.values_at -2..-1).to eq(List[5,2])
+    expect(list.values_at -1..-2).to eq(List.new)
+    expect(list.values_at 0,1..5).to eq(List[4,1,3,5,2,nil])
+    expect(list.values_at 10..12).to eq(List[nil,nil,nil])
+    expect{list.values_at "a"}.to raise_error(TypeError)
+  end
+
+  it "delete" do
+    expect(List.new.delete(nil)).to eq(nil)
+    list = List[4,1,3,2,5,5]
+    expect(list.delete(1)).to eq(1)
+    expect(list).to eq(List[4,3,2,5,5])
+    expect(list.delete(5){"not found"}).to eq(5)
+    expect(list).to eq(List[4,3,2])
+    expect(list.delete(4)).to eq(4)
+    expect(list.delete(1){"not found"}).to eq("not found")
+
+    list = Array.new(1024,0).to_list
+    expect(list.delete(0)).to eq(0)
+    expect(list).to eq(List.new)
+  end
+
+  it "delete_at" do
+    list = List[1,2,3]
+    expect(list.delete_at(1)).to eq(2)
+    expect(list).to eq(List[1,3])
+    expect(list.delete_at(-1)).to eq(3)
+    expect(list).to eq(List[1])
+    expect(list.delete_at(0)).to eq(1)
+    expect(list).to eq(List[])
+    expect(list.delete_at(0)).to eq(nil)
+    expect{list.delete_at("a")}.to raise_error(TypeError)
+  end
+
+  it "delete_if" do
+    list = List[1,2,3,4,5]
+    expect(list.delete_if{|i| 3 < i}).to eq(List[1,2,3])
+    expect(list.delete_if.each{|i| i.even?}).to eq(List[1,3])
+    expect(list.delete_if{|i| 0 < i}).to eq(List[])
+    expect(list.delete_if{|i| 0 < i}).to eq(List[])
+    expect(list).to eq(List[])
+  end
+
+  it "reject" do
+    list = List[1,2,3,4,5]
+    expect(list.reject{|i| 3 < i}).to eq(List[1,2,3])
+    expect(list.reject.each{|i| i.even?}).to eq(List[1,3,5])
+    expect(list.reject{|i| 0 < i}).to eq(List[])
+    expect(list).to eq(List[1,2,3,4,5])
+  end
+
+  it "reject!" do
+    list = List[1,2,3,4,5]
+    expect(list.reject!{|i| i % 10 == 0}).to eq(nil)
+    expect(list.reject!{|i| 3 < i}).to eq(List[1,2,3])
+    expect(list.reject!.each{|i| i.even?}).to eq(List[1,3])
+    expect(list.reject!{|i| 0 < i}).to eq(List[])
+    expect(list.reject!{|i| 0 < i}).to eq(nil)
+    expect(list).to eq(List[])
+  end
+
+  it "zip" do
+    a = List[4,5,6]
+    b = List[7,8,9]
+    ary = []
+    expect(a.zip(b)).to eq(List[List[4,7],List[5,8],List[6,9]])
+    expect(List[1,2,3].zip(a,b)).to eq(List[List[1,4,7],List[2,5,8],List[3,6,9]])
+    expect(List[1,2].zip(a,b)).to eq(List[List[1,4,7],List[2,5,8]])
+    expect(a.zip(List[1,2],List[8])).to eq(List[List[4,1,8],List[5,2,nil],List[6,nil,nil]])
+    expect(a.zip([1,2],[8])).to eq(List[List[4,1,8],List[5,2,nil],List[6,nil,nil]])
+    expect(a.zip([1,2],[8]){|i| ary << i}).to eq(nil)
+    expect(ary).to eq([List[4,1,8],List[5,2,nil],List[6,nil,nil]])
+    expect{a.zip("a")}.to raise_error  # <= 1.9.3 NoMethodError, >= 2.0.0 TypeError
+  end
+
+  it "transpose" do
+    expect(List[].transpose).to eq(List[])
+    expect(List[List[1,2],List[3,4],List[5,6]].transpose).to eq(List[List[1,3,5],List[2,4,6]])
+    expect(List[[1,2],[3,4],[5,6]].transpose).to eq(List[List[1,3,5],List[2,4,6]])
+    expect{List[[1],[2,3]].transpose}.to raise_error(IndexError)
+    expect{List[1].transpose}.to raise_error(TypeError)
+  end
+
+  it "fill" do
+    list = List["a","b","c","d"]
+    expect(list.fill("x")).to eq(List["x","x","x","x"])
+    expect(list.fill("z",2,2)).to eq(List["x","x","z","z"])
+    expect(list.fill("y",0..1)).to eq(List["y","y","z","z"])
+    expect(list.fill{"foo"}).to eq(List["foo","foo","foo","foo"])
+    expect(list[0].object_id).to_not eq(list[1].object_id)
+    expect(list.fill{|i| i*i}).to eq(List[0,1,4,9])
+    expect(list.fill(-2){|i| i*i*i}).to eq(List[0,1,8,27])
+    expect(list.fill("z",2)).to eq(List[0,1,"z","z"])
+    expect{list.fill("z","a")}.to raise_error(TypeError)
+  end
+
+  it "include?" do
+    list = List.new
+    expect(list.include?(1)).to eq(false)
+    list.push 1,2,3
+    expect(list.include?(1)).to eq(true)
+    expect(list.include?(10)).to eq(false)
+  end
+
+  it "<=>" do
+    expect(List["a","a","c"] <=> List["a","b","c"]).to eq(-1)
+    expect(List[1,2,3,4,5,6] <=> List[1,2]).to eq(+1)
+    expect(List[1,2] <=> List[1,2]).to eq(0)
+    expect(List[1,2] <=> List[1,:two]).to eq(nil)
+  end
+
+  it "slice" do
+    list = List.new
+    expect(list.slice(0)).to eq(nil)
+    list.push 1,2,3,4,5
+    expect(list.slice(0)).to eq(1)
+    expect(list.slice(1,3)).to eq(List[2,3,4])
+    expect(list.slice(1..3)).to eq(List[2,3,4])
+  end
+
+  it "slice!" do
+    list = List.new
+    expect(list.slice!(0)).to eq(nil)
+    list.push 1,2,3,4,5
+    expect(list.slice!(2)).to eq(3)
+    expect(list.slice!(2,3)).to eq(List[4,5])
+    expect(list.slice!(0..1)).to eq(List[1,2])
+    list.push 1,2,3,4,5
+    expect(list.slice!(-1)).to eq(5)
+    expect(list.slice!(100..110)).to eq(nil)
+    expect(list.slice!(100)).to eq(nil)
+    expect(list.slice!(100,1)).to eq(nil)
+    expect{list.slice!(0xffffffffffffffff)}.to raise_error(RangeError)
+    expect{list.slice!("a")}.to raise_error(TypeError)
+    expect{list.slice!(1,"a")}.to raise_error(TypeError)
+    expect{list.slice!(1,2,3)}.to raise_error(ArgumentError)
+    expect(list).to eq(List[1,2,3,4])
   end
 
   it "ring" do
