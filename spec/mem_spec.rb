@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe List do
+describe LinkedList do
   it "gc safe" do
     a = (0..3).to_a
-    list = List.new a
+    list = LinkedList.new a
     GC.start
     expect(list.to_a).to eq(a)
     expect(a.length).to eq(4)
