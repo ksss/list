@@ -12,8 +12,8 @@ task :spec => :compile
 
 require 'rake/extensiontask'
 spec = Bundler::GemHelper.gemspec
-Rake::ExtensionTask.new('list', spec) do |ext|
-  ext.ext_dir = 'ext/list'
+Rake::ExtensionTask.new('linkedlist', spec) do |ext|
+  ext.ext_dir = 'ext/linkedlist'
   ext.lib_dir = 'lib'
 end
 

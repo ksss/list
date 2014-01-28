@@ -9,6 +9,7 @@ for version in ${VERSIONS[@]}
 do
   rbenv global ${version}
   rbenv rehash
+  rake clean
   bundle exec rake
 done
 rbenv global ${ORIG} && rbenv rehash

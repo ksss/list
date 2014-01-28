@@ -1956,7 +1956,7 @@ list_to_list(VALUE self)
 }
 
 void
-Init_list(void)
+Init_linkedlist(void)
 {
 	cLinkedList = rb_define_class("LinkedList", rb_cObject);
 	rb_include_module(cLinkedList, rb_mEnumerable);
