@@ -2,11 +2,6 @@
 
 LinkedList in Ruby.
 
-    +---------+  +->+---------+  +->+---------+
-    |  value  |  |  |  value  |  |  |  value  |
-    |  next   |--+  |  next   |--+  |  next   |
-    +---------+     +---------+     +---------+
-
 all methods working like Array
 
 ```ruby
@@ -17,6 +12,11 @@ list[0,1]
 list.each do |i|
 end
 ```
+
+    +---------+  +->+---------+  +->+---------+
+    |  value  |  |  |  value  |  |  |  value  |
+    |  next   |--+  |  next   |--+  |  next   |
+    +---------+     +---------+     +---------+
 
 But, LinkedList is not Array.
 
