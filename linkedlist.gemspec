@@ -7,8 +7,8 @@ Gem::Specification.new do |spec|
   spec.version       = "0.0.1"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{LinkedList in Ruby}
+  spec.description   = %q{LinkedList in Ruby}
   spec.homepage      = ""
   spec.license       = "MIT"
 

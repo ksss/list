@@ -19,12 +19,12 @@ end
 
 desc "gem reinstall"
 task :reinstall do |t|
-  system "gem uninstall list"
+  system "gem uninstall linkedlist"
   system "rake clean"
   system "bundle exec rake"
   system "rake install"
-  system "irb -rlist"
+  system "irb -rlinkedlist"
 end
 
 
-task :default => [:spec]
+task :default => [:spec,:build]

@@ -1,6 +1,8 @@
 #include "ruby.h"
 #include "ruby/encoding.h"
 
+#define LIST_VERSION "0.0.1"
+
 VALUE cLinkedList;
 
 ID id_cmp, id_each;
@@ -2037,6 +2039,9 @@ Init_linkedlist(void)
 
 	rb_define_method(cLinkedList, "to_list", list_to_list, 0);
 	rb_define_method(rb_mEnumerable, "to_list", ary_to_list, -1);
+
+	rb_define_const(cLinkedList, "VERSION", rb_str_new2(LIST_VERSION));
+
 	id_cmp = rb_intern("<=>");
 	id_each = rb_intern("each");
 }

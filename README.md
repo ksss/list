@@ -1,12 +1,43 @@
-# List
+# LinkedList
 
-TODO: Write a gem description
+LinkedList in Ruby.
+
+    +---------+  +->+---------+  +->+---------+
+    |  value  |  |  |  value  |  |  |  value  |
+    |  next   |--+  |  next   |--+  |  next   |
+    +---------+     +---------+     +---------+
+
+all methods working like Array
+
+```ruby
+list = LinkedList.new
+list.push 1,2,3
+list.pop
+list[0,1]
+list.each do |i|
+end
+```
+
+But, LinkedList is not Array.
+
+```ruby
+list = LinkedList[1,2,3]
+list.ring.each do |i|
+  puts i # print infinitely 1,2,3,1,2,3,1,2...
+end
+```
+
+       +---------+  +->+---------+  +->+---------+
+       |  value  |  |  |  value  |  |  |  value  |
+    +->|  next   |--+  |  next   |--+  |  next   |--+
+    |  +---------+     +---------+     +---------+  |
+    +-----------------------------------------------+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'list'
+    gem 'linkedlist'
 
 And then execute:
 
@@ -22,7 +53,7 @@ TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/list/fork )
+1. Fork it ( http://github.com/ksss/linkedlist/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
