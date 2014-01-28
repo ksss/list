@@ -2,6 +2,8 @@
 
 LinkedList in Ruby.
 
+[![Build Status](https://travis-ci.org/ksss/linkedlist.png?branch=master)](https://travis-ci.org/ksss/linkedlist)
+
 ## Usage
 
 all methods working like Array
