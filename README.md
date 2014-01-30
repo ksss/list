@@ -6,7 +6,7 @@ LinkedList in Ruby.
 
 ## Usage
 
-all methods working like Array
+All interface is same with Array class.
 
 ```ruby
 list = LinkedList.new
@@ -49,7 +49,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install list
+    $ gem install linkedlist
 
 ## Contributing
 
