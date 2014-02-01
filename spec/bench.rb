@@ -34,6 +34,7 @@ Benchmark.bm(32) do |x|
             o.send(m, *args)
           end
         end
+        GC.start
       end
     end
   end
