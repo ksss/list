@@ -2,4 +2,4 @@ require 'mkmf'
 
 $CFLAGS << " -Wall"
 
-create_makefile('linkedlist')
+create_makefile('list')

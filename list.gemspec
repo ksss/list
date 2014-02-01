@@ -3,12 +3,12 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = "linkedlist"
+  spec.name          = "list"
   spec.version       = "0.0.1"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
-  spec.summary       = %q{LinkedList in Ruby}
-  spec.description   = %q{LinkedList in Ruby}
+  spec.summary       = %q{List in Ruby}
+  spec.description   = %q{List in Ruby}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
-  spec.extensions    = ["ext/linkedlist/extconf.rb"]
+  spec.extensions    = ["ext/list/extconf.rb"]
 
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"

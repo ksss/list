@@ -3,7 +3,7 @@
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'linkedlist'
+require 'list'
 require 'benchmark'
 
 Benchmark.bm(32) do |x|
@@ -14,7 +14,7 @@ Benchmark.bm(32) do |x|
     end
   end
 
-  [Array, LinkedList].each do |obj|
+  [Array, List].each do |obj|
     [1000,10000,100000].each do |n|
       x.report("#{obj}#new #{n}times") do
         n.times do

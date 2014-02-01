@@ -1,15 +1,15 @@
-# LinkedList
+# List
 
-LinkedList in Ruby.
+List in Ruby.
 
-[![Build Status](https://travis-ci.org/ksss/linkedlist.png?branch=master)](https://travis-ci.org/ksss/linkedlist)
+[![Build Status](https://travis-ci.org/ksss/list.png?branch=master)](https://travis-ci.org/ksss/list)
 
 ## Usage
 
 All interface is same with Array class.
 
 ```ruby
-list = LinkedList.new
+list = List.new
 list.push 1,2,3
 list.pop
 list[0,1]
@@ -22,18 +22,18 @@ end
     |  next   |--+  |  next   |--+  |  next   |
     +---------+     +---------+     +---------+
 
-But, LinkedList is not Array.
+But, List is not Array.
 
 ```ruby
-list = LinkedList[1,2,3]
+list = List[1,2,3]
 list.ring.each do |i|
   puts i # print infinitely 1,2,3,1,2,3,1,2...
 end
 ```
 
-       +---------+  +->+---------+  +->+---------+
-       |  value  |  |  |  value  |  |  |  value  |
-    +->|  next   |--+  |  next   |--+  |  next   |--+
+    +->+---------+  +->+---------+  +->+---------+
+    |  |  value  |  |  |  value  |  |  |  value  |
+    |  |  next   |--+  |  next   |--+  |  next   |--+
     |  +---------+     +---------+     +---------+  |
     +-----------------------------------------------+
 
@@ -41,7 +41,7 @@ end
 
 Add this line to your application's Gemfile:
 
-    gem 'linkedlist'
+    gem 'list'
 
 And then execute:
 
@@ -49,11 +49,11 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install linkedlist
+    $ gem install list
 
 ## Contributing
 
-1. Fork it ( http://github.com/ksss/linkedlist/fork )
+1. Fork it ( http://github.com/ksss/list/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

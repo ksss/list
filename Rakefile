@@ -12,18 +12,18 @@ task :spec => :compile
 
 require 'rake/extensiontask'
 spec = Bundler::GemHelper.gemspec
-Rake::ExtensionTask.new('linkedlist', spec) do |ext|
-  ext.ext_dir = 'ext/linkedlist'
+Rake::ExtensionTask.new('list', spec) do |ext|
+  ext.ext_dir = 'ext/list'
   ext.lib_dir = 'lib'
 end
 
 desc "gem reinstall"
 task :reinstall do |t|
-  system "gem uninstall linkedlist"
+  system "gem uninstall list"
   system "rake clean"
   system "bundle exec rake"
   system "rake install"
-  system "irb -rlinkedlist"
+  system "irb -rlist"
 end
 
 
