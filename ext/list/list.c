@@ -3,7 +3,7 @@
 
 #define LIST_VERSION "0.0.1"
 
-VALUE cLinkedList;
+VALUE cList;
 
 ID id_cmp, id_each;
 
@@ -128,7 +128,7 @@ check(list_t *ptr, const char *msg)
 static inline VALUE
 list_new(void)
 {
-	return rb_obj_alloc(cLinkedList);
+	return rb_obj_alloc(cList);
 }
 
 static VALUE
@@ -304,7 +304,7 @@ list_push(VALUE self, VALUE obj)
 
 	list_modify_check(self);
 	if (self == obj) {
-		rb_raise(rb_eArgError, "`LinkedList' cannot set recursive");
+		rb_raise(rb_eArgError, "`List' cannot set recursive");
 	}
 
 	next = item_alloc(obj, NULL);
@@ -617,7 +617,7 @@ list_equal(VALUE self, VALUE obj)
 	if (self == obj)
 		return Qtrue;
 
-	if (!rb_obj_is_kind_of(obj, cLinkedList)) {
+	if (!rb_obj_is_kind_of(obj, cList)) {
 		if (rb_type(obj) == T_ARRAY) {
 			return Qfalse;
 		}
@@ -734,7 +734,7 @@ list_subseq(VALUE self, long beg, long len)
 		return list_new();
 	}
 
-	return list_make_partial(self, cLinkedList, beg, len);
+	return list_make_partial(self, cList, beg, len);
 }
 
 static VALUE
@@ -985,7 +985,7 @@ list_take_first_or_last(int argc, VALUE *argv, VALUE self, enum list_take_pos_fl
 	if (flag == LIST_TAKE_LAST) {
 		offset = len - n;
 	}
-	return list_make_partial(self, cLinkedList, offset, n);
+	return list_make_partial(self, cList, offset, n);
 }
 
 static VALUE
@@ -1236,7 +1236,7 @@ recursive_join(VALUE obj, VALUE argp, int recur)
 	int *first = (int *)arg[3];
 
 	if (recur) {
-		rb_raise(rb_eArgError, "recursive linkedlist join");
+		rb_raise(rb_eArgError, "recursive list join");
 	} else {
 		list_join_1(obj, ary, sep, 0, result, first);
 	}
@@ -1291,7 +1291,7 @@ list_join_1(VALUE obj, VALUE list, VALUE sep, long i, VALUE result, int *first)
 			obj = val;
 			ary_join:
 			if (val == list) {
-				rb_raise(rb_eArgError, "recursive linkedlist join");
+				rb_raise(rb_eArgError, "recursive list join");
 			}
 			VALUE args[4];
 			args[0] = val;
@@ -1995,89 +1995,89 @@ list_to_list(VALUE self)
 }
 
 void
-Init_linkedlist(void)
+Init_list(void)
 {
-	cLinkedList = rb_define_class("LinkedList", rb_cObject);
-	rb_include_module(cLinkedList, rb_mEnumerable);
+	cList = rb_define_class("List", rb_cObject);
+	rb_include_module(cList, rb_mEnumerable);
 
-	rb_define_alloc_func(cLinkedList, list_alloc);
+	rb_define_alloc_func(cList, list_alloc);
 
-	rb_define_singleton_method(cLinkedList, "[]", list_s_create, -1);
-	rb_define_singleton_method(cLinkedList, "try_convert", list_s_try_convert, 1);
+	rb_define_singleton_method(cList, "[]", list_s_create, -1);
+	rb_define_singleton_method(cList, "try_convert", list_s_try_convert, 1);
 
-	rb_define_method(cLinkedList, "initialize", list_initialize, -1);
-	rb_define_method(cLinkedList, "initialize_copy", list_replace, 1);
+	rb_define_method(cList, "initialize", list_initialize, -1);
+	rb_define_method(cList, "initialize_copy", list_replace, 1);
 
-	rb_define_method(cLinkedList, "inspect", list_inspect, 0);
-	rb_define_alias(cLinkedList, "to_s", "inspect");
-	rb_define_method(cLinkedList, "to_a", list_to_a, 0);
-	rb_define_method(cLinkedList, "to_ary", list_to_a, 0);
-	rb_define_method(cLinkedList, "frozen?", list_frozen_p, 0);
+	rb_define_method(cList, "inspect", list_inspect, 0);
+	rb_define_alias(cList, "to_s", "inspect");
+	rb_define_method(cList, "to_a", list_to_a, 0);
+	rb_define_method(cList, "to_ary", list_to_a, 0);
+	rb_define_method(cList, "frozen?", list_frozen_p, 0);
 
-	rb_define_method(cLinkedList, "==", list_equal, 1);
-	rb_define_method(cLinkedList, "hash", list_hash, 0);
+	rb_define_method(cList, "==", list_equal, 1);
+	rb_define_method(cList, "hash", list_hash, 0);
 
-	rb_define_method(cLinkedList, "[]", list_aref, -1);
-	rb_define_method(cLinkedList, "[]=", list_aset, -1);
-	rb_define_method(cLinkedList, "at", list_at, 1);
-	rb_define_method(cLinkedList, "fetch", list_fetch, -1);
-	rb_define_method(cLinkedList, "first", list_first, -1);
-	rb_define_method(cLinkedList, "last", list_last, -1);
-	rb_define_method(cLinkedList, "concat", list_concat, 1);
-	rb_define_method(cLinkedList, "<<", list_push, 1);
-	rb_define_method(cLinkedList, "push", list_push_m, -1);
-	rb_define_method(cLinkedList, "pop", list_pop_m, -1);
-	rb_define_method(cLinkedList, "shift", list_shift_m, -1);
-	rb_define_method(cLinkedList, "unshift", list_unshift_m, -1);
-	rb_define_method(cLinkedList, "insert", list_insert, -1);
-	rb_define_method(cLinkedList, "each", list_each, 0);
-	rb_define_method(cLinkedList, "each_index", list_each_index, 0);
-	rb_define_method(cLinkedList, "length", list_length, 0);
-	rb_define_alias(cLinkedList, "size", "length");
-	rb_define_method(cLinkedList, "empty?", list_empty_p, 0);
-	rb_define_alias(cLinkedList, "index", "find_index");
-	rb_define_method(cLinkedList, "rindex", list_rindex, -1);
-	rb_define_method(cLinkedList, "join", list_join_m, -1);
-	rb_define_method(cLinkedList, "reverse", list_reverse_m, 0);
-	rb_define_method(cLinkedList, "reverse!", list_reverse_bang, 0);
-	rb_define_method(cLinkedList, "rotate", list_rotate_m, -1);
-	rb_define_method(cLinkedList, "rotate!", list_rotate_bang, -1);
-	rb_define_method(cLinkedList, "sort", list_sort, 0);
-	rb_define_method(cLinkedList, "sort!", list_sort_bang, 0);
-	rb_define_method(cLinkedList, "sort_by", list_sort_by, 0);
-	rb_define_method(cLinkedList, "sort_by!", list_sort_by_bang, 0);
-	rb_define_method(cLinkedList, "collect", list_collect, 0);
-	rb_define_method(cLinkedList, "collect!", list_collect_bang, 0);
-	rb_define_method(cLinkedList, "map", list_collect, 0);
-	rb_define_method(cLinkedList, "map!", list_collect_bang, 0);
-	rb_define_method(cLinkedList, "select", list_select, 0);
-	rb_define_method(cLinkedList, "select!", list_select_bang, 0);
-	rb_define_method(cLinkedList, "keep_if", list_keep_if, 0);
-	rb_define_method(cLinkedList, "values_at", list_values_at, -1);
-	rb_define_method(cLinkedList, "delete", list_delete, 1);
-	rb_define_method(cLinkedList, "delete_at", list_delete_at_m, 1);
-	rb_define_method(cLinkedList, "delete_if", list_delete_if, 0);
-	rb_define_method(cLinkedList, "reject", list_reject, 0);
-	rb_define_method(cLinkedList, "reject!", list_reject_bang, 0);
-	rb_define_method(cLinkedList, "zip", list_zip, -1);
-	rb_define_method(cLinkedList, "transpose", list_transpose, 0);
-	rb_define_method(cLinkedList, "replace", list_replace, 1);
-	rb_define_method(cLinkedList, "clear", list_clear, 0);
-	rb_define_method(cLinkedList, "fill", list_fill, -1);
-	rb_define_method(cLinkedList, "include?", list_include_p, 1);
-	rb_define_method(cLinkedList, "<=>", list_cmp, 1);
+	rb_define_method(cList, "[]", list_aref, -1);
+	rb_define_method(cList, "[]=", list_aset, -1);
+	rb_define_method(cList, "at", list_at, 1);
+	rb_define_method(cList, "fetch", list_fetch, -1);
+	rb_define_method(cList, "first", list_first, -1);
+	rb_define_method(cList, "last", list_last, -1);
+	rb_define_method(cList, "concat", list_concat, 1);
+	rb_define_method(cList, "<<", list_push, 1);
+	rb_define_method(cList, "push", list_push_m, -1);
+	rb_define_method(cList, "pop", list_pop_m, -1);
+	rb_define_method(cList, "shift", list_shift_m, -1);
+	rb_define_method(cList, "unshift", list_unshift_m, -1);
+	rb_define_method(cList, "insert", list_insert, -1);
+	rb_define_method(cList, "each", list_each, 0);
+	rb_define_method(cList, "each_index", list_each_index, 0);
+	rb_define_method(cList, "length", list_length, 0);
+	rb_define_alias(cList, "size", "length");
+	rb_define_method(cList, "empty?", list_empty_p, 0);
+	rb_define_alias(cList, "index", "find_index");
+	rb_define_method(cList, "rindex", list_rindex, -1);
+	rb_define_method(cList, "join", list_join_m, -1);
+	rb_define_method(cList, "reverse", list_reverse_m, 0);
+	rb_define_method(cList, "reverse!", list_reverse_bang, 0);
+	rb_define_method(cList, "rotate", list_rotate_m, -1);
+	rb_define_method(cList, "rotate!", list_rotate_bang, -1);
+	rb_define_method(cList, "sort", list_sort, 0);
+	rb_define_method(cList, "sort!", list_sort_bang, 0);
+	rb_define_method(cList, "sort_by", list_sort_by, 0);
+	rb_define_method(cList, "sort_by!", list_sort_by_bang, 0);
+	rb_define_method(cList, "collect", list_collect, 0);
+	rb_define_method(cList, "collect!", list_collect_bang, 0);
+	rb_define_method(cList, "map", list_collect, 0);
+	rb_define_method(cList, "map!", list_collect_bang, 0);
+	rb_define_method(cList, "select", list_select, 0);
+	rb_define_method(cList, "select!", list_select_bang, 0);
+	rb_define_method(cList, "keep_if", list_keep_if, 0);
+	rb_define_method(cList, "values_at", list_values_at, -1);
+	rb_define_method(cList, "delete", list_delete, 1);
+	rb_define_method(cList, "delete_at", list_delete_at_m, 1);
+	rb_define_method(cList, "delete_if", list_delete_if, 0);
+	rb_define_method(cList, "reject", list_reject, 0);
+	rb_define_method(cList, "reject!", list_reject_bang, 0);
+	rb_define_method(cList, "zip", list_zip, -1);
+	rb_define_method(cList, "transpose", list_transpose, 0);
+	rb_define_method(cList, "replace", list_replace, 1);
+	rb_define_method(cList, "clear", list_clear, 0);
+	rb_define_method(cList, "fill", list_fill, -1);
+	rb_define_method(cList, "include?", list_include_p, 1);
+	rb_define_method(cList, "<=>", list_cmp, 1);
 
-	rb_define_method(cLinkedList, "slice", list_aref, -1);
-	rb_define_method(cLinkedList, "slice!", list_slice_bang, -1);
+	rb_define_method(cList, "slice", list_aref, -1);
+	rb_define_method(cList, "slice!", list_slice_bang, -1);
 
-	rb_define_method(cLinkedList, "ring", list_ring, 0);
-	rb_define_method(cLinkedList, "ring!", list_ring_bang, 0);
-	rb_define_method(cLinkedList, "ring?", list_ring_p, 0);
+	rb_define_method(cList, "ring", list_ring, 0);
+	rb_define_method(cList, "ring!", list_ring_bang, 0);
+	rb_define_method(cList, "ring?", list_ring_p, 0);
 
-	rb_define_method(cLinkedList, "to_list", list_to_list, 0);
+	rb_define_method(cList, "to_list", list_to_list, 0);
 	rb_define_method(rb_mEnumerable, "to_list", ary_to_list, -1);
 
-	rb_define_const(cLinkedList, "VERSION", rb_str_new2(LIST_VERSION));
+	rb_define_const(cList, "VERSION", rb_str_new2(LIST_VERSION));
 
 	id_cmp = rb_intern("<=>");
 	id_each = rb_intern("each");

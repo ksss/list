@@ -1,5 +1,5 @@
-require 'linkedlist'
+require 'list'
 
 # short and inheritance
-class LL < LinkedList
+class L < List
 end
