@@ -41,7 +41,7 @@ end
 
 List have same interface with Array.
 
-**insert** and **delete* is more faster than Array.
+**insert** and **delete** is more faster than Array.
 
 ## Installation
 
