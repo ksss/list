@@ -797,6 +797,7 @@ list_splice(VALUE self, long beg, long len, VALUE rpl)
 				}
 				if (i == beg + len) {
 					last = c;
+					break;
 				}
 			}
 			if (beg == 0) {
