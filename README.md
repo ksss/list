@@ -37,6 +37,12 @@ end
     |  +---------+     +---------+     +---------+  |
     +-----------------------------------------------+
 
+## Feature
+
+List have same interface with Array.
+
+**insert** and **delete* is more faster than Array.
+
 ## Installation
 
 Add this line to your application's Gemfile:
