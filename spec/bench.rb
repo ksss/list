@@ -7,7 +7,7 @@ require 'list'
 require 'benchmark'
 
 Benchmark.bm(32) do |x|
-  [1000,10000,100000].each do |n|
+  [100000].each do |n|
     x.report("#{n}times") do
       n.times do
       end
@@ -15,7 +15,7 @@ Benchmark.bm(32) do |x|
   end
 
   [Array, List].each do |obj|
-    [1000,10000,100000].each do |n|
+    [100000].each do |n|
       x.report("#{obj}#new #{n}times") do
         n.times do
           obj.new
@@ -24,10 +24,10 @@ Benchmark.bm(32) do |x|
     end
   end
 
-  [[:push, 1], [:unshift, 1], [:pop], [:shift], [:insert, 0, 1], [:delete_at, 0]].each do |args|
+  [[:[], 100000], [:push, 1], [:unshift, 1], [:pop], [:shift], [:insert, 0, 1], [:delete_at, 0]].each do |args|
     m = args.shift
     [(0..100000).to_a, (0..100000).to_list].each do |obj|
-      [1000,10000,100000].each do |n|
+      [100000].each do |n|
         o = obj.dup
         x.report("#{o.class}##{m} #{n}times") do
           n.times do
