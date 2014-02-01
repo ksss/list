@@ -16,6 +16,7 @@ describe LinkedList do
   it "create" do
     expect(LinkedList[]).to eq(LinkedList.new)
     expect(LinkedList[1,2,3]).to eq(LinkedList.new [1,2,3])
+    expect(LL[1,2,3]).to eq(LL.new [1,2,3])
   end
 
   it "try_convert" do
@@ -28,12 +29,21 @@ describe LinkedList do
     expect([].to_list).to eq(LinkedList.new)
     expect([1,[2],3].to_list).to eq(LinkedList[1,[2],3])
     expect((0..5).to_list).to eq(LinkedList[0,1,2,3,4,5])
+    expect(LinkedList[1,2,3].to_list).to eq(LinkedList[1,2,3])
+    expect(LL[1,2,3].to_list).to eq(LL[1,2,3])
   end
 
   it "initialize" do
     expect(LinkedList.new).to be_a_kind_of(LinkedList)
     expect(LinkedList.new([])).to be_a_kind_of(LinkedList)
     expect(LinkedList.new([1,2,3])).to be_a_kind_of(LinkedList)
+    expect(LinkedList.new([1,2,3])).to eq([1,2,3].to_list)
+    expect(LinkedList.new(3)).to eq([nil,nil,nil].to_list)
+    expect(LinkedList.new(3, 0)).to eq([0,0,0].to_list)
+    expect(LinkedList.new(3){|i| "foo"}).to eq(["foo", "foo", "foo"].to_list)
+    expect{LinkedList.new(3,0,0)}.to raise_error(ArgumentError)
+    expect{LinkedList.new("a")}.to raise_error(TypeError)
+    expect{LinkedList.new("a",0)}.to raise_error(TypeError)
   end
 
   it "dup and replace" do
@@ -83,6 +93,7 @@ describe LinkedList do
     list = LinkedList.new
     expect(list.eql?(list)).to be true
     expect(list.eql?(LinkedList.new)).to be false
+    expect(list.eql?(LL.new)).to be false
   end
 
   it "hash" do

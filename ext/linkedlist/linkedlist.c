@@ -77,6 +77,7 @@ enum list_take_pos_flags {
 static VALUE list_push_ary(VALUE, VALUE);
 static VALUE list_push(VALUE, VALUE);
 static VALUE list_unshift(VALUE, VALUE);
+static VALUE list_replace(VALUE, VALUE);
 
 #if DEBUG
 static void
@@ -370,13 +371,48 @@ list_s_try_convert(VALUE dummy, VALUE obj)
 static VALUE
 list_initialize(int argc, VALUE *argv, VALUE self)
 {
+	VALUE size, val;
+	long len;
+	long i;
+
+	list_modify_check(self);
 	if (argc == 0) {
 		return self;
 	}
-	if (rb_type(argv[0]) == T_ARRAY) {
-		return list_push_ary(self, argv[0]);
+	if (argc == 1 && !FIXNUM_P(argv[0])) {
+		switch (rb_type(argv[0])) {
+		case T_ARRAY:
+			return list_push_ary(self, argv[0]);
+		case T_DATA:
+			return list_replace(self, argv[0]);
+		default:
+			break;
+		}
 	}
-	return Qnil;
+
+	rb_scan_args(argc, argv, "02", &size, &val);
+
+	len = NUM2LONG(size);
+	if (len < 0) {
+		rb_raise(rb_eArgError, "negative size");
+	}
+	if (LIST_MAX_SIZE < len) {
+		rb_raise(rb_eArgError, "size too big");
+	}
+
+	if (rb_block_given_p()) {
+		if (argc == 2) {
+			rb_warn("block supersedes default value argument");
+		}
+		for (i = 0; i < len; i++) {
+			list_push(self, rb_yield(LONG2NUM(i)));
+		}
+	} else {
+		for (i = 0; i < len; i++) {
+			list_push(self, val);
+		}
+	}
+	return self;
 }
 
 static VALUE
