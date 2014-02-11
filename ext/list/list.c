@@ -1,7 +1,7 @@
 #include "ruby.h"
 #include "ruby/encoding.h"
 
-#define LIST_VERSION "0.0.1"
+#define LIST_VERSION "0.1.0"
 
 VALUE cList;
 
