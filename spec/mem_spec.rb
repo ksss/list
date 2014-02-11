@@ -2,10 +2,8 @@ require 'spec_helper'
 
 describe List do
   it "gc safe" do
-    a = (0..3).to_a
-    list = List.new a
+    list = (0...3000).to_list
     GC.start
-    expect(list.to_a).to eq(a)
-    expect(a.length).to eq(4)
+    expect(list.length).to eq(3000)
   end
 end
