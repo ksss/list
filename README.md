@@ -4,17 +4,25 @@ List in Ruby.
 
 [![Build Status](https://travis-ci.org/ksss/list.png?branch=master)](https://travis-ci.org/ksss/list)
 
+**List** is a class of wrapped singly-linked list.
+
+It's can use same as **Array**. But processing speed is different.
+
 ## Usage
 
 All interface is same with Array class.
 
 ```ruby
+require 'list'
+
 list = List.new
 list.push 1,2,3
 list.pop
-list[0,1]
+list[0,1] = 1
 list.each do |i|
+  puts i #=> 1,2
 end
+puts List[1,2,3].map {|i| i * i}.inject(:+) #=> 14
 ```
 
     +---------+  +->+---------+  +->+---------+
@@ -39,9 +47,17 @@ end
 
 ## Feature
 
-List have same interface with Array.
+- List have all same method with Array.
+- **insert** and **delete** is more faster than Array.
+- Can use MRI at version 1.9.3, 2.0.0 and 2.1.0.
 
-**insert** and **delete** is more faster than Array.
+## Other API
+
+`List#ring`: experimental method for expressing the ring buffer.
+
+`Enumeratable#to_list`: all class of included Enumeratable, can convert to List instance
+
+`List#to_list`: is for duck typing this.
 
 ## Installation
 
@@ -64,3 +80,11 @@ Or install it yourself as:
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Other
+
+[RDoc for Array](http://ruby-doc.org/core-2.1.0/Array.html)
+
+[benchmark script result](https://gist.github.com/ksss/8760144)
+
+[wikipedia](http://en.wikipedia.org/wiki/Linked_list)
