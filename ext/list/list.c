@@ -649,9 +649,15 @@ recursive_equal(VALUE list1, VALUE list2, int recur)
 static VALUE
 list_delegate_rb(int argc, VALUE *argv, VALUE list, ID id)
 {
-	VALUE ary;
-	ary = rb_funcall2(list_to_a(list), id, argc, argv);
-	return to_list(ary);
+	VALUE result;
+	result = rb_funcall2(list_to_a(list), id, argc, argv);
+	switch (rb_type(result)) {
+	case T_DATA:
+	case T_ARRAY:
+		return to_list(result);
+	default:
+		return result;
+	}
 }
 
 
@@ -2665,6 +2671,12 @@ list_to_list(VALUE self)
 	return self;
 }
 
+static VALUE
+list_pack(VALUE self, VALUE str)
+{
+	return list_delegate_rb(1, &str, self, rb_intern("pack"));
+}
+
 void
 Init_list(void)
 {
@@ -2779,6 +2791,8 @@ Init_list(void)
 
 	rb_define_method(cList, "to_list", list_to_list, 0);
 	rb_define_method(rb_mEnumerable, "to_list", ary_to_list, -1);
+
+	rb_define_method(cList, "pack", list_pack, 1);
 
 	rb_define_const(cList, "VERSION", rb_str_new2(LIST_VERSION));
 

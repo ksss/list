@@ -1214,4 +1214,8 @@ describe List do
     expect(list.ring.ring?).to eq(true)
     expect(list.ring!.ring?).to eq(true)
   end
+
+  it "pack" do
+    expect(@cls[76,105,115,116].pack("C*")).to eq("List")
+  end
 end
