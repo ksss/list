@@ -12,17 +12,27 @@ It's can use same as **Array**. But processing speed is different.
 
 All interface is same with Array class.
 
+```
+> Array.methods - List.methods
+=> []
+> Array.new.methods - List.new.methods
+=> []
+```
+
+List can use instead of Array.
+
 ```ruby
 require 'list'
 
-list = List.new
+list = List.new # or List[]
 list.push 1,2,3
-list.pop
-list[0,1] = 1
+list.pop #=> 3
+list[0,2] #=> List[1,2]
+list[0,1] = 5
 list.each do |i|
-  puts i #=> 1,2
+  puts i #=> 5,2
 end
-puts List[1,2,3].map {|i| i * i}.inject(:+) #=> 14
+puts List[1,2,3].map{|i| i * i}.inject(:+) #=> 14
 ```
 
     +---------+  +->+---------+  +->+---------+
@@ -55,6 +65,10 @@ end
 
 `List#ring`: experimental method for expressing the ring buffer.
 
+`List#ring!`: change self to ring buffer.
+
+`List#ring?`: check self to ring buffer.
+
 `Enumeratable#to_list`: all class of included Enumeratable, can convert to List instance
 
 `List#to_list`: is for duck typing this.
@@ -72,6 +86,14 @@ And then execute:
 Or install it yourself as:
 
     $ gem install list
+
+## Testing
+
+This library is tested using [Travis](https://travis-ci.org/ksss/list).
+
+- MRI 1.9.3
+- MRI 2.0.0
+- MRI 2.1.0
 
 ## Contributing
 

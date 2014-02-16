@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
   spec.summary       = %q{List in Ruby}
-  spec.description   = %q{List in Ruby}
+  spec.description   = %q{List is a class of wrapped singly-linked list}
   spec.homepage      = ""
   spec.license       = "MIT"
 
