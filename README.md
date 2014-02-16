@@ -57,7 +57,8 @@ end
 
 ## Feature
 
-- List have all same method with Array.
+- List have all same method and behavior with Array.
+- include `Enumeratable`
 - **insert** and **delete** is more faster than Array.
 - Can use MRI at version 1.9.3, 2.0.0 and 2.1.0.
 
@@ -71,7 +72,9 @@ end
 
 `Enumeratable#to_list`: all class of included Enumeratable, can convert to List instance
 
-`List#to_list`: is for duck typing this.
+`List#to_list`: return self.
+
+`List#to_a`: change from List to Array.
 
 ## Installation
 
