@@ -60,7 +60,7 @@ end
 - List have all same method and behavior with Array.
 - include `Enumeratable`
 - **insert** and **delete** is more faster than Array.
-- Can use MRI at version 1.9.3, 2.0.0 and 2.1.0.
+- Can use MRI at version 2.0.0, 2.1.6 and 2.2.2.
 
 ## Other API
 

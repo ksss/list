@@ -2,7 +2,7 @@
 
 # this script need installed *rbenv* and installed all ruby version
 
-VERSIONS=(1.9.3-p484 2.0.0-p247 2.1.0)
+VERSIONS=(2.0.0-p645 2.1.6 2.2.2)
 ORIG=`rbenv version-name`
 
 for version in ${VERSIONS[@]}
@@ -13,4 +13,3 @@ do
   bundle exec rake
 done
 rbenv global ${ORIG} && rbenv rehash
-

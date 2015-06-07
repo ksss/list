@@ -54,24 +54,6 @@ static VALUE list_length(VALUE);
 #  define TRUE 1
 #endif
 
-/* compatible for ruby-v1.9.3 */
-#ifndef UNLIMITED_ARGUMENTS
-#  define UNLIMITED_ARGUMENTS (-1)
-#endif
-
-/* compatible for ruby-v1.9.3 */
-#ifndef rb_check_arity
-#  define rb_check_arity(argc,min,max) do { \
-	if (((argc) < (min) || ((max) != UNLIMITED_ARGUMENTS && (max) < (argc)))) { \
-		rb_raise(rb_eArgError, "wrong number of argument (%d for %d..%d)", argc, min, max); \
-	} \
-} while (0)
-#endif
-
-/* compatible for ruby-v1.9.3 */
-#ifndef RETURN_SIZED_ENUMERATOR
-#  define RETURN_SIZED_ENUMERATOR(a,b,c,d) RETURN_ENUMERATOR(a,b,c)
-#else
 static VALUE
 list_enum_length(VALUE self, VALUE args, VALUE eobj)
 {
@@ -92,7 +74,6 @@ list_cycle_size(VALUE self, VALUE args, VALUE eobj)
 	if (mul <= 0) return INT2FIX(0);
 	return rb_funcall(list_length(self), '*', 1, LONG2FIX(mul));
 }
-#endif
 
 /* from intern.h */
 #ifndef RBASIC_CLEAR_CLASS

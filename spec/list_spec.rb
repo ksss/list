@@ -610,11 +610,11 @@ describe List do
     expect(a.zip([1,2],[8])).to eq(@cls[[4,1,8],[5,2,nil],[6,nil,nil]])
     expect(a.zip([1,2],[8]){|i| ary << i}).to eq(nil)
     expect(ary).to eq([[4,1,8],[5,2,nil],[6,nil,nil]])
-    expect{a.zip("a")}.to raise_error  # <= 1.9.3 NoMethodError, >= 2.0.0 TypeError
+    expect{a.zip("a")}.to raise_error(TypeError)
 
     obj = Object.new
     def obj.to_a; [1,2]; end
-    expect{@cls[*%w{a b}].zip(obj)}.to raise_error # <= 1.9.3 NoNameError, >= 2.0.0 TypeError
+    expect{@cls[*%w{a b}].zip(obj)}.to raise_error(TypeError)
 
     def obj.each; [3,4].each{|e| yield e}; end
     expect(@cls[*%w{a b}].zip(obj)).to eq(@cls[['a',3],['b',4]])
@@ -1014,7 +1014,7 @@ describe List do
       expect(@cls[0,1,2].shuffle(random: gen)).to eq(@cls[0,1,2].shuffle)
     end
 
-    # FIXME v1.9.3 and v2.0.0 nothing raise
+    # FIXME v2.0.0 nothing raise
     # expect{@cls[0,1,2].shuffle(xawqij: "a")}.to raise_error(ArgumentError)
     # expect{@cls[0,1,2].shuffle!(xawqij: "a")}.to raise_error(ArgumentError)
 
@@ -1092,7 +1092,7 @@ describe List do
       end
     end
 
-    # FIXME v1.9.3 and v2.0.0 nothing raise
+    # FIXME v2.0.0 nothing raise
     # expect{@cls[0,1,2].sample(xawqij: "a")}.to raise_error(ArgumentError)
   end
 
@@ -1176,9 +1176,7 @@ describe List do
     expect{@cls[1, 2, 42, 100, 666].bsearch{ "not ok" }}.to raise_error(TypeError)
     expect(@cls[1, 2, 42, 100, 666].bsearch{false}).to eq(@cls[1, 2, 42, 100, 666].bsearch{})
     enum = @cls[1, 2, 42, 100, 666].bsearch
-    if enum.respond_to? :size # v1.9.3 not respond to :size
-      expect(enum.size).to eq nil
-    end
+    expect(enum.size).to eq nil
     expect(enum.each{|x| x >= 33}).to eq(42)
 
     a = @cls[0,4,7,10,12]
