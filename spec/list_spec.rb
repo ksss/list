@@ -257,7 +257,7 @@ describe List do
     list.push 1,2,3
     expect(list.pop(2)).to eq(@cls[2,3])
     expect(list.pop).to eq(1)
-    expect{list.pop("1")}.to raise_error(TypeError) 
+    expect{list.pop("1")}.to raise_error(TypeError)
   end
 
   it "shift" do
@@ -266,7 +266,7 @@ describe List do
     list.push 1,2,3
     expect(list.shift(2)).to eq(@cls[1,2])
     expect(list.shift).to eq(3)
-    expect{list.shift("1")}.to raise_error(TypeError) 
+    expect{list.shift("1")}.to raise_error(TypeError)
   end
 
   it "unshift" do
@@ -611,7 +611,7 @@ describe List do
     expect(a.zip([1,2],[8]){|i| ary << i}).to eq(nil)
     expect(ary).to eq([[4,1,8],[5,2,nil],[6,nil,nil]])
     expect{a.zip("a")}.to raise_error  # <= 1.9.3 NoMethodError, >= 2.0.0 TypeError
-    
+
     obj = Object.new
     def obj.to_a; [1,2]; end
     expect{@cls[*%w{a b}].zip(obj)}.to raise_error # <= 1.9.3 NoNameError, >= 2.0.0 TypeError
@@ -802,7 +802,7 @@ describe List do
     a = @cls[*%w{a a}]
     b = a.uniq
     expect(a).to eq(@cls[*%w{a a}])
-    expect(a.none?(&:frozen?)).to eq true 
+    expect(a.none?(&:frozen?)).to eq true
     expect(b).to eq(@cls[*%w{a}])
     expect(b.none?(&:frozen?)).to eq true
 
@@ -832,7 +832,7 @@ describe List do
     a = @cls[*%w{a a}]
     b = a.uniq {|v| v }
     expect(a).to eq(@cls[*%w{a a}])
-    expect(a.none?(&:frozen?)).to eq true 
+    expect(a.none?(&:frozen?)).to eq true
     expect(b).to eq(@cls[*%w{a}])
     expect(b.none?(&:frozen?)).to eq true
   end
@@ -1082,7 +1082,7 @@ describe List do
     end
 
     expect{[1,2].sample(-1)}.to raise_error(ArgumentError)
-  
+
     gen = Random.new(0)
     srand(0)
     a = @cls[*(1..18)]
