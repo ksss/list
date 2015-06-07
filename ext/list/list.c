@@ -1,7 +1,7 @@
 #include "ruby.h"
 #include "ruby/encoding.h"
 
-#define LIST_VERSION "0.1.0"
+#define LIST_VERSION "0.2.0"
 
 VALUE cList;
 
@@ -2060,16 +2060,6 @@ list_make_hash_by(VALUE list)
 	return list_add_hash_by(hash, list);
 }
 
-static inline void
-list_recycle_hash(VALUE hash)
-{
-	if (RHASH(hash)->ntbl) {
-		st_table *tbl = RHASH(hash)->ntbl;
-		RHASH(hash)->ntbl = 0;
-		st_free_table(tbl);
-	}
-}
-
 static VALUE
 list_diff(VALUE list1, VALUE list2)
 {
@@ -2084,7 +2074,6 @@ list_diff(VALUE list1, VALUE list2)
 		if (st_lookup(RHASH_TBL(hash), c->value, 0)) continue;
 		list_push(list3, c->value);
 	}
-	list_recycle_hash(hash);
 	return list3;
 }
 
@@ -2108,7 +2097,6 @@ list_and(VALUE list1, VALUE list2)
 			list_push(list3, c1->value);
 		}
 	}
-	list_recycle_hash(hash);
 
 	return list3;
 }
@@ -2154,7 +2142,6 @@ list_or(VALUE list1, VALUE list2)
 			list_push(list3, c2->value);
 		}
 	}
-	list_recycle_hash(hash);
 	return list3;
 }
 
@@ -2178,7 +2165,6 @@ list_uniq(VALUE self)
 		hash = list_make_hash(self);
 	}
 	uniq = list_hash_values(hash);
-	list_recycle_hash(hash);
 	return uniq;
 }
 
