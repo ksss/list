@@ -991,7 +991,14 @@ describe List do
     expect(a.count).to eq(5)
     expect(a.count(1)).to eq(2)
     expect(a.count {|x| x % 2 == 1}).to eq(3)
+
+    orig = $stderr
+    $stderr = StringIO.new
     expect(a.count(1) {|x| x % 2 == 1}).to eq(2)
+    $stderr.rewind
+    expect($stderr.read.chomp).to match("warning: given block not used")
+    $stderr = orig
+
     expect{a.count(0,1)}.to raise_error(ArgumentError)
   end
 
